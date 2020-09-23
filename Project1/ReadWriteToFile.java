@@ -1,3 +1,7 @@
+/**
+ * This code is part of a previous assignment, and is only here due to the requirement for the Snakes and Ladders application to be launched from the Game Center.
+ */
+
 package Project1;
 
 import java.io.File;

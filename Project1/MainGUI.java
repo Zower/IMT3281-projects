@@ -9,6 +9,7 @@ public class MainGUI extends JPanel {
     private final JFrame jFrame;
     private JButton rollDice;
     private JButton maxClicks;
+    private JButton snakesLaddersButton;
 
     private final JButton exit;
     private final Box mainBox;
@@ -39,6 +40,14 @@ public class MainGUI extends JPanel {
             }
 
         };
+
+        this.snakesLaddersButton = new JButton("Snakes and ladders") {
+            {
+                setSize(150, 75);
+                setMaximumSize(getSize());
+            }
+        };
+
         this.exit = new JButton("Exit");
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setResizable(false);
@@ -51,8 +60,9 @@ public class MainGUI extends JPanel {
     public void MainPage() {
 
         jFrame.pack();
-        // mainBox.setMaximumSize(new Dimension(300,150));
-        mainBox.add(Box.createVerticalStrut(40));
+
+        createButtonSpace(40, 0);
+
         jFrame.setSize(400, 400);
         jFrame.setVisible(true);
         jFrame.getContentPane().setLayout(new BoxLayout(jFrame.getContentPane(), BoxLayout.Y_AXIS));
@@ -60,8 +70,8 @@ public class MainGUI extends JPanel {
         mainBox.add(rollDice);
         Game.RollDiceGUI rollGUI = new Game.RollDiceGUI();
         rollDice.addActionListener(dice -> rollGUI.RollDiceGUI());
-        mainBox.add(Box.createVerticalStrut(20));
-        mainBox.add(Box.createHorizontalStrut(100));
+
+        createButtonSpace(20, 100);
 
         mainBox.add(maxClicks);
         MaxClickGUI maxGUI = new MaxClickGUI();
@@ -69,13 +79,22 @@ public class MainGUI extends JPanel {
             maxGUI.maxClickGui();
 
         });
-        mainBox.add(Box.createVerticalStrut(50));
-        mainBox.add(Box.createHorizontalStrut(20));
+
+        createButtonSpace(20, 100);
+
+        mainBox.add(snakesLaddersButton);
+        snakesLaddersGUI snakesLadders = new snakesLaddersGUI();
+        snakesLaddersButton.addActionListener(SL -> {
+            snakesLadders.initialize();
+        });
+
+        createButtonSpace(50, 20);
 
         jFrame.getContentPane().add(mainBox);
         mainBox.setAlignmentX(CENTER_ALIGNMENT);
 
         mainBox.setBorder(BorderFactory.createTitledBorder(" Games"));
+
         // closes the jFrame when ever the the exit button clickMe
         exit.addActionListener(exiting -> jFrame.dispatchEvent(new WindowEvent(jFrame, WindowEvent.WINDOW_CLOSING)));
         JPanel extPanel = new JPanel();
@@ -83,8 +102,10 @@ public class MainGUI extends JPanel {
         jFrame.add(extPanel);
 
     }
-    /**
-     * sets the JFrame frame for Maxclikcs game
-     */
+
+    public void createButtonSpace(int vertical, int horizontal) {
+        mainBox.add(Box.createVerticalStrut(vertical));
+        mainBox.add(Box.createHorizontalStrut(horizontal));
+    }
 
 }
