@@ -1,0 +1,39 @@
+package Project1;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.util.Scanner;
+
+public class ReadWriteToFile {
+
+    public ReadWriteToFile() {
+
+    }
+
+    public void writeOutput(int record) {
+        try {
+            try (FileWriter outputWriter = new FileWriter("record.txt", false)) {
+                outputWriter.write(record);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public int readRecord() {
+        int record = 0;
+        try {
+            String path = System.getProperty("user.dir") + "\\IMT3881\\record.txt";
+            File file = new File(path);
+            Scanner scanner = new Scanner(file);
+
+            record = scanner.nextInt();
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return record;
+    }
+}
