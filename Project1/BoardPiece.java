@@ -28,10 +28,6 @@ public class BoardPiece {
         return y;
     }
 
-    public JButton getButton() {
-        return button;
-    }
-
     /**
      * Makes the button invisible, but it is still clickable
      */
