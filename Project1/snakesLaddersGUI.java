@@ -52,10 +52,6 @@ public class snakesLaddersGUI extends JPanel {
         // TODO: Implement game logic.
     }
 
-    public void configButton(BoardPiece bp) {
-
-    }
-
     /**
      * This function populates the play field with a set of hardcoded 36 buttons, to
      * be used by the players to click on.
