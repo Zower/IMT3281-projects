@@ -72,7 +72,8 @@ public class snakesLaddersGUI extends JPanel {
         controller.configPlayers(frame);
         controller.getPlayer(0).print();
         controller.getPlayer(1).print();
-        controller.advancePos(0, 4);
+        controller.advancePos(0, 8);
+        controller.advancePos(1, 21);
     }
 
     /**

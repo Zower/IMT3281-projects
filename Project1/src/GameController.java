@@ -1,5 +1,8 @@
 package Project1.src;
 
+import java.util.Dictionary;
+import java.util.HashMap;
+
 import javax.swing.JFrame;
 
 public class GameController {
@@ -7,21 +10,28 @@ public class GameController {
     final private int TILENO = 36;
     private Player[] players = new Player[2];
     private BoardPiece[] board = new BoardPiece[36];
+    private HashMap<Integer, Integer> obstacles = new HashMap<Integer, Integer>();
+    {
+
+    };
 
     GameController() {
         this.turn = 0;
+        this.obstacles = populateObstacles();
     }
 
     GameController(Player player1, Player player2) {
         this.turn = 0; // 0 = player 1, 1 = player2
         this.players[0] = player1;
         this.players[1] = player2;
+        this.obstacles = populateObstacles();
     }
 
     GameController(int turn, Player player1, Player player2) {
         this.turn = turn;
         this.players[0] = player1;
         this.players[1] = player2;
+        this.obstacles = populateObstacles();
     }
 
     GameController(int turn, Player player1, Player player2, BoardPiece[] board) {
@@ -29,6 +39,18 @@ public class GameController {
         this.players[0] = player1;
         this.players[1] = player2;
         this.board = board;
+    }
+
+    public HashMap<Integer, Integer> populateObstacles() {
+        HashMap<Integer, Integer> obst = new HashMap<Integer, Integer>();
+        obst.put(6, 22);
+        obst.put(12, 2);
+        obst.put(13, 24);
+        obst.put(18, 9);
+        obst.put(27, 34);
+        obst.put(32, 30);
+        obst.put(35, 21);
+        return obst;
     }
 
     /**
@@ -40,7 +62,7 @@ public class GameController {
      */
     public void advancePos(int player, int advanceNo) {
         int tempTile = players[player].getTile() + advanceNo;
-        // tempTile.checkObstacles();
+        tempTile = checkObstacles(tempTile);
         if (tempTile == TILENO) {
             // won = true;
         }
@@ -48,8 +70,16 @@ public class GameController {
         players[player].advance(tilePos, tempTile);
     }
 
+    public int checkObstacles(int tile) {
+        if (obstacles.containsKey(tile)) {
+            return obstacles.get(tile);
+        } else {
+            return tile;
+        }
+    }
+
     public int[] getTilePos(int tile) {
-        int[] coords = { board[tile].getX(), board[tile].getY() };
+        int[] coords = { board[tile].getX() + 22, board[tile].getY() + 20 };
         return coords;
     }
 
