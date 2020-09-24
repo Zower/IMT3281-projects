@@ -1,4 +1,4 @@
-package Project1;
+package Project1.src;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -20,13 +20,18 @@ public class snakesLaddersGUI extends JPanel {
      * This function creates the JFrame, adds all the pieces and draws the frame. It
      * is the backbone of the GUI.
      */
-    public void initialize() {
+    public void initGUI() {
         JFrame frame = new JFrame("Snakes and Ladders");
         frame.setLayout(null);
         frame.setSize(1000, 650);
 
+        // Create all the buttons
+        BoardPiece[] board = populateBoard();
+
+        gameLogic(board, frame);
+
         /**
-         * This try block draws the playing board based on the image 'board.png'
+         * Draws the playing board based on the image 'board.png'
          */
         try {
             BufferedImage myPicture = ImageIO.read(new File("Project1\\assets\\board.png"));
@@ -37,19 +42,38 @@ public class snakesLaddersGUI extends JPanel {
             System.out.println(e);
         }
 
-        // Create all the buttons
-        BoardPiece[] board = populateBoard();
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+    }
+
+    // TODO: Implement game logic.
+    public void gameLogic(BoardPiece[] board, JFrame frame) {
 
         // Configure the buttons
         for (int i = 0; i < board.length; i++) {
             BoardPiece currTile = board[i];
-            currTile.configButton(frame);
+            currTile.config(frame);
         }
 
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // Create the players
+        PlayerController controller = new PlayerController();
+        try {
+            controller = new PlayerController(
+                    new Player(1, 10, 525, ImageIO.read(new File("Project1\\assets\\player1.png"))),
+                    new Player(1, 30, 525, ImageIO.read(new File("Project1\\assets\\player2.png"))));
 
-        // TODO: Implement game logic.
+            controller.configPlayers(frame);
+
+        } catch (Exception e) {
+            System.out.println(e);
+            System.exit(-1);
+        }
+
+        controller.getPlayer(0).print();
+        controller.getPlayer(1).print();
+        controller.setPos(0, 130, 525);
+
     }
 
     /**

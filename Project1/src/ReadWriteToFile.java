@@ -2,7 +2,7 @@
  * This code is part of a previous assignment, and is only here due to the requirement for the Snakes and Ladders application to be launched from the Game Center.
  */
 
-package Project1;
+package Project1.src;
 
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -1,4 +1,4 @@
-package Project1;
+package Project1.src;
 
 import javax.swing.*;
 import java.awt.*;
@@ -85,7 +85,7 @@ public class MainGUI extends JPanel {
         mainBox.add(snakesLaddersButton);
         snakesLaddersGUI snakesLadders = new snakesLaddersGUI();
         snakesLaddersButton.addActionListener(SL -> {
-            snakesLadders.initialize();
+            snakesLadders.initGUI();
         });
 
         createButtonSpace(50, 20);
