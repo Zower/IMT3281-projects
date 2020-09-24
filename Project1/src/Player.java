@@ -8,7 +8,6 @@ import javax.swing.JFrame;
 
 public class Player extends GUIElement {
     private JLabel playerImage;
-    final private int TILENO = 36;
 
     public Player(int tileNo, int x, int y, BufferedImage playerIcon) {
         super(tileNo, x, y);
@@ -29,20 +28,9 @@ public class Player extends GUIElement {
         frame.add(playerImage);
     }
 
-    public void advancePos(int advanceNo) {
-        int tempTile = getTile() + advanceNo;
-        // tempTile.checkObstacles();
-        if (tempTile == 36) {
-            // won = true;
-        }
-        int[] tilePos = getTilePos(tempTile);
-        playerImage.setLocation(tilePos[0], tilePos[1]);
-        setTile(tempTile);
-    }
-
-    public int[] getTilePos(int tile) {
-        int[] test = { 3, 2 };
-        return test;
+    public void advance(int[] coords, int tile) {
+        setLocation(coords[0], coords[1]);
+        setTile(tile);
     }
 
     /**

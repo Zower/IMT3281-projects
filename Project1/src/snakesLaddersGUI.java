@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 
 import java.io.File;
 
+@SuppressWarnings("serial")
 public class snakesLaddersGUI extends JPanel {
 
     public snakesLaddersGUI() {
@@ -57,23 +58,21 @@ public class snakesLaddersGUI extends JPanel {
         }
 
         // Create the players
-        PlayerController controller = new PlayerController();
+        GameController controller = new GameController();
+        controller.insertBoard(board);
         try {
-            controller = new PlayerController(
-                    new Player(1, 10, 525, ImageIO.read(new File("Project1\\assets\\player1.png"))),
+            controller.insertPlayers(new Player(1, 10, 525, ImageIO.read(new File("Project1\\assets\\player1.png"))),
                     new Player(1, 30, 525, ImageIO.read(new File("Project1\\assets\\player2.png"))));
-
-            controller.configPlayers(frame);
 
         } catch (Exception e) {
             System.out.println(e);
             System.exit(-1);
         }
 
+        controller.configPlayers(frame);
         controller.getPlayer(0).print();
         controller.getPlayer(1).print();
-        controller.setPos(0, 130, 525);
-
+        controller.advancePos(0, 4);
     }
 
     /**

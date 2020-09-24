@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 
+@SuppressWarnings("serial")
 public class MainGUI extends JPanel {
 
     private final JFrame jFrame;
@@ -69,7 +70,7 @@ public class MainGUI extends JPanel {
 
         mainBox.add(rollDice);
         Game.RollDiceGUI rollGUI = new Game.RollDiceGUI();
-        rollDice.addActionListener(dice -> rollGUI.RollDiceGUI());
+        rollDice.addActionListener(dice -> rollGUI.RollDiceInitGUI());
 
         createButtonSpace(20, 100);
 
