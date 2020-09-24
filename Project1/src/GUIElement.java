@@ -11,8 +11,8 @@ public class GUIElement {
         this.y = y;
     }
 
-    public void setTile(int tile) {
-        tileNo = tile;
+    public void setTile(int tileNo) {
+        this.tileNo = tileNo;
     }
 
     public int getTile() {
