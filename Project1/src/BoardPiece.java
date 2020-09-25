@@ -2,6 +2,7 @@ package Project1.src;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import java.awt.event.*;
 
 /**
  * Class representing a piece on the board, with its clickable button, tile
@@ -14,26 +15,23 @@ public class BoardPiece extends GUIElement {
         super(tileNo, x, y);
         this.button = new JButton();
         setInvisible();
-        addActionListener();
     }
 
     /**
      * Makes the button invisible, but it is still clickable
      */
-    public void setInvisible() {
+    private void setInvisible() {
         button.setOpaque(false);
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
     }
 
-    /**
-     * Adds the action listener on the button TODO: Implement logic on button press.
-     */
+    public void addActionListener(ActionListener l) {
+        button.addActionListener(l);
+    }
 
-    public void addActionListener() {
-        button.addActionListener(start -> {
-            System.out.println(Integer.toString(getTile()));
-        });
+    public void removeActionListener(ActionListener l) {
+        button.removeActionListener(l);
     }
 
     /**

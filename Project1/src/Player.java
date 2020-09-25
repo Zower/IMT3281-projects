@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 
 public class Player extends GUIElement {
     private JLabel playerImage;
+    private int nextTile;
 
     public Player(int tileNo, int x, int y, BufferedImage playerIcon) {
         super(tileNo, x, y);
@@ -22,6 +23,14 @@ public class Player extends GUIElement {
         playerImage.setLocation(x, y);
     }
 
+    public void setNextTile(int nextTile) {
+        this.nextTile = nextTile;
+    }
+
+    public int getNextTile() {
+        return nextTile;
+    }
+
     public void config(JFrame frame) {
         setSize(60, 60);
         setLocation(getX(), getY());
@@ -33,13 +42,4 @@ public class Player extends GUIElement {
         setTile(tile);
     }
 
-    /**
-     * Roll two die.
-     * 
-     * @return int array containing the dice rolls.
-     */
-    public int[] rollDie() {
-        int[] die = { (int) (Math.random() * 6 + 1), (int) (Math.random() * 6 + 1) };
-        return die;
-    }
 }

@@ -4,17 +4,28 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.JTextField;
 
 import java.awt.image.BufferedImage;
+
 import javax.imageio.ImageIO;
+
+import java.awt.event.*;
 
 import java.io.File;
 
 @SuppressWarnings("serial")
-public class snakesLaddersGUI extends JPanel {
+public class snakesLaddersGUI extends JPanel implements ActionListener {
+
+    private JButton rollDice;
+    private JTextField diceResult1;
+    private JTextField diceResult2;
+    private GameController controller;
+    private int suspectedTurn;
 
     public snakesLaddersGUI() {
-        System.out.println("Created class snakesLaddersGUI");
+        this.suspectedTurn = 0;
     }
 
     /**
@@ -30,6 +41,7 @@ public class snakesLaddersGUI extends JPanel {
         BoardPiece[] board = populateBoard();
 
         gameLogic(board, frame);
+        configGUIButtons(frame);
 
         /**
          * Draws the playing board based on the image 'board.png'
@@ -48,8 +60,7 @@ public class snakesLaddersGUI extends JPanel {
 
     }
 
-    // TODO: Implement game logic.
-    public void gameLogic(BoardPiece[] board, JFrame frame) {
+    private void gameLogic(BoardPiece[] board, JFrame frame) {
 
         // Configure the buttons
         for (int i = 0; i < board.length; i++) {
@@ -58,7 +69,7 @@ public class snakesLaddersGUI extends JPanel {
         }
 
         // Create the players
-        GameController controller = new GameController();
+        controller = new GameController();
         controller.insertBoard(board);
         try {
             controller.insertPlayers(new Player(1, 10, 525, ImageIO.read(new File("Project1\\assets\\player1.png"))),
@@ -70,10 +81,38 @@ public class snakesLaddersGUI extends JPanel {
         }
 
         controller.configPlayers(frame);
-        controller.getPlayer(0).print();
-        controller.getPlayer(1).print();
-        controller.advancePos(0, 8);
-        controller.advancePos(1, 21);
+
+    }
+
+    /**
+     * Progression of the game, happens on rollDice mouseDown.
+     * 
+     */
+    public void actionPerformed(ActionEvent e) {
+        if (suspectedTurn == controller.getTurn()) {
+            int[] diceResults = rollDie();
+
+            diceResult1.setText(Integer.toString(diceResults[0]));
+            diceResult2.setText(Integer.toString(diceResults[1]));
+            controller.advancePos(diceResults[0] + diceResults[1]);
+            cycleSuspectedTurn();
+        } else {
+            System.out.println("Click the player icon to progress on the ladder/snakes");
+        }
+    }
+
+    private void configGUIButtons(JFrame frame) {
+        rollDice = new JButton("Roll the dice!");
+        diceResult1 = new JTextField("0");
+        diceResult2 = new JTextField("0");
+        rollDice.setBounds(733, 225, 120, 25);
+        diceResult1.setBounds(733, 270, 20, 20);
+        diceResult2.setBounds(833, 270, 20, 20);
+        rollDice.addActionListener(this);
+
+        frame.add(rollDice);
+        frame.add(diceResult1);
+        frame.add(diceResult2);
     }
 
     /**
@@ -86,7 +125,7 @@ public class snakesLaddersGUI extends JPanel {
      *         logic.
      */
 
-    public BoardPiece[] populateBoard() {
+    private BoardPiece[] populateBoard() {
         int x = -100;
         int y = 500;
         boolean reverse = false; // Populate from right-to-left or vice versa.
@@ -119,10 +158,29 @@ public class snakesLaddersGUI extends JPanel {
      * @param tileSize The size to increase or decrease by.
      * @return the given tileSize, either negative or positive based on @reverse
      */
-    public int operate(int tileSize, boolean reverse) {
+    private int operate(int tileSize, boolean reverse) {
         if (reverse) {
             return -tileSize;
         }
         return tileSize;
+    }
+
+    /**
+     * Roll two die.
+     * 
+     * @return int array containing the dice rolls.
+     */
+    public int[] rollDie() {
+        int[] die = { (int) (Math.random() * 6 + 1), (int) (Math.random() * 6 + 1) };
+        System.out.println("Die 1: " + Integer.toString(die[0]) + "\nDie 2: " + Integer.toString(die[1]));
+        return die;
+    }
+
+    public void cycleSuspectedTurn() {
+        if (suspectedTurn == 0) {
+            suspectedTurn = 1;
+        } else {
+            suspectedTurn = 0;
+        }
     }
 }

@@ -1,11 +1,13 @@
 package Project1.src;
 
-import java.util.Dictionary;
 import java.util.HashMap;
 
 import javax.swing.JFrame;
+import javax.swing.AbstractButton;
 
-public class GameController {
+import java.awt.event.*;
+
+public class GameController implements ActionListener {
     private int turn;
     final private int TILENO = 36;
     private Player[] players = new Player[2];
@@ -20,20 +22,6 @@ public class GameController {
         this.obstacles = populateObstacles();
     }
 
-    GameController(Player player1, Player player2) {
-        this.turn = 0; // 0 = player 1, 1 = player2
-        this.players[0] = player1;
-        this.players[1] = player2;
-        this.obstacles = populateObstacles();
-    }
-
-    GameController(int turn, Player player1, Player player2) {
-        this.turn = turn;
-        this.players[0] = player1;
-        this.players[1] = player2;
-        this.obstacles = populateObstacles();
-    }
-
     GameController(int turn, Player player1, Player player2, BoardPiece[] board) {
         this.turn = turn;
         this.players[0] = player1;
@@ -41,46 +29,44 @@ public class GameController {
         this.board = board;
     }
 
-    public HashMap<Integer, Integer> populateObstacles() {
-        HashMap<Integer, Integer> obst = new HashMap<Integer, Integer>();
-        obst.put(6, 22);
-        obst.put(12, 2);
-        obst.put(13, 24);
-        obst.put(18, 9);
-        obst.put(27, 34);
-        obst.put(32, 30);
-        obst.put(35, 21);
-        return obst;
-    }
-
     /**
-     * Advances (graphically and otherwise) the players position. TODO: Check
-     * obstacles, handle winning, handle going beyond the board.
+     * Advances (graphically and otherwise) the current players position. TODO:
+     * handle winning, handle going beyond the board.
      * 
-     * @param player    The player to advance.
      * @param advanceNo The amount of tiles to move.
      */
-    public void advancePos(int player, int advanceNo) {
-        int tempTile = players[player].getTile() + advanceNo;
-        tempTile = checkObstacles(tempTile);
-        if (tempTile == TILENO) {
-            // won = true;
-        }
+    public void advancePos(int advanceNo) {
+        int tempTile = players[turn].getTile() + advanceNo;
+        int obstTile = checkObstacles(tempTile);
         int[] tilePos = getTilePos(tempTile - 1);
-        players[player].advance(tilePos, tempTile);
+
+        players[turn].advance(tilePos, tempTile);
+        if (obstTile == 0) {
+            cycleTurn();
+        } else {
+            players[turn].setNextTile(obstTile);
+            board[tempTile - 1].addActionListener(this);
+        }
+        // if (tempTile == TILENO) {
+        // // won = true;
+        // }
+
     }
 
-    public int checkObstacles(int tile) {
+    private int checkObstacles(int tile) {
         if (obstacles.containsKey(tile)) {
             return obstacles.get(tile);
         } else {
-            return tile;
+            return 0;
         }
     }
 
-    public int[] getTilePos(int tile) {
-        int[] coords = { board[tile].getX() + 22, board[tile].getY() + 20 };
-        return coords;
+    public void actionPerformed(ActionEvent e) {
+        int nextTile = players[turn].getNextTile();
+        int[] tilePos = getTilePos(nextTile - 1);
+        players[turn].advance(tilePos, nextTile);
+        cycleTurn();
+        ((AbstractButton) e.getSource()).removeActionListener(this);
     }
 
     public void insertBoard(BoardPiece[] board) {
@@ -95,6 +81,19 @@ public class GameController {
     public void configPlayers(JFrame frame) {
         players[0].config(frame);
         players[1].config(frame);
+    }
+
+    public void cycleTurn() {
+        if (turn == 0) {
+            turn = 1;
+        } else {
+            turn = 0;
+        }
+    }
+
+    public int[] getTilePos(int tile) {
+        int[] coords = { board[tile].getX() + 22, board[tile].getY() + 20 };
+        return coords;
     }
 
     /**
@@ -132,6 +131,18 @@ public class GameController {
      */
     public Player getPlayer(int player) {
         return players[player];
+    }
+
+    private HashMap<Integer, Integer> populateObstacles() {
+        HashMap<Integer, Integer> obst = new HashMap<Integer, Integer>();
+        obst.put(6, 22);
+        obst.put(12, 2);
+        obst.put(13, 24);
+        obst.put(18, 9);
+        obst.put(27, 34);
+        obst.put(32, 30);
+        obst.put(35, 21);
+        return obst;
     }
 
 }
