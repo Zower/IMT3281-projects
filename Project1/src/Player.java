@@ -1,10 +1,10 @@
 package Project1.src;
 
 import javax.swing.JLabel;
-import java.awt.image.BufferedImage;
-
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
+
+import java.awt.image.BufferedImage;
+import java.awt.Container;
 
 public class Player extends GUIElement {
     private JLabel playerImage;
@@ -21,6 +21,7 @@ public class Player extends GUIElement {
 
     public void setLocation(int x, int y) {
         playerImage.setLocation(x, y);
+        playerImage.revalidate();
     }
 
     public void setNextTile(int nextTile) {
@@ -31,15 +32,21 @@ public class Player extends GUIElement {
         return nextTile;
     }
 
-    public void config(JFrame frame) {
+    public void config(Container c) {
         setSize(60, 60);
         setLocation(getX(), getY());
-        frame.add(playerImage);
+        c.add(playerImage);
     }
 
-    public void advance(int[] coords, int tile) {
-        setLocation(coords[0], coords[1]);
+    public void advance(BoardPiece[] board, int tile) {
+        int[] tilePos = getTilePos(board, tile - 1);
+        setLocation(tilePos[0], tilePos[1]);
         setTile(tile);
+    }
+
+    public int[] getTilePos(BoardPiece[] board, int tile) {
+        int[] coords = { board[tile].getX() + 22, board[tile].getY() + 20 };
+        return coords;
     }
 
 }

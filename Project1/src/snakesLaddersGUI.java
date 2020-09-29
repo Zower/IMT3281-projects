@@ -1,30 +1,33 @@
 package Project1.src;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 
 import java.awt.image.BufferedImage;
+import java.awt.Font;
+import java.awt.event.*;
+import java.awt.Container;
 
 import javax.imageio.ImageIO;
-
-import java.awt.event.*;
 
 import java.io.File;
 
 @SuppressWarnings("serial")
-public class snakesLaddersGUI extends JPanel implements ActionListener {
+public class snakesLaddersGUI extends JFrame implements ActionListener {
 
+    private Container c;
     private JButton rollDice;
     private JTextField diceResult1;
     private JTextField diceResult2;
+    private JLabel infoText;
     private GameController controller;
     private int suspectedTurn;
 
     public snakesLaddersGUI() {
+        super("Snakes and Ladders");
         this.suspectedTurn = 0;
     }
 
@@ -32,16 +35,19 @@ public class snakesLaddersGUI extends JPanel implements ActionListener {
      * This function creates the JFrame, adds all the pieces and draws the frame. It
      * is the backbone of the GUI.
      */
+
     public void initGUI() {
-        JFrame frame = new JFrame("Snakes and Ladders");
-        frame.setLayout(null);
-        frame.setSize(1000, 650);
+        setLayout(null);
+        setSize(1000, 650);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        c = getContentPane();
 
         // Create all the buttons
         BoardPiece[] board = populateBoard();
 
-        gameLogic(board, frame);
-        configGUIButtons(frame);
+        gameLogic(board, c);
+        configGUIButtons(c);
 
         /**
          * Draws the playing board based on the image 'board.png'
@@ -50,22 +56,21 @@ public class snakesLaddersGUI extends JPanel implements ActionListener {
             BufferedImage myPicture = ImageIO.read(new File("Project1\\assets\\board.png"));
             JLabel picLabel = new JLabel(new ImageIcon(myPicture));
             picLabel.setBounds(0, 0, 600, 600);
-            frame.add(picLabel);
+            add(picLabel);
         } catch (Exception e) {
             System.out.println(e);
         }
 
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
 
     }
 
-    private void gameLogic(BoardPiece[] board, JFrame frame) {
+    private void gameLogic(BoardPiece[] board, Container c) {
 
         // Configure the buttons
         for (int i = 0; i < board.length; i++) {
             BoardPiece currTile = board[i];
-            currTile.config(frame);
+            currTile.config(c);
         }
 
         // Create the players
@@ -80,7 +85,7 @@ public class snakesLaddersGUI extends JPanel implements ActionListener {
             System.exit(-1);
         }
 
-        controller.configPlayers(frame);
+        controller.configPlayers(c);
 
     }
 
@@ -90,30 +95,51 @@ public class snakesLaddersGUI extends JPanel implements ActionListener {
      */
     public void actionPerformed(ActionEvent e) {
         if (suspectedTurn == controller.getTurn()) {
+
             int[] diceResults = rollDie();
 
             diceResult1.setText(Integer.toString(diceResults[0]));
             diceResult2.setText(Integer.toString(diceResults[1]));
-            controller.advancePos(diceResults[0] + diceResults[1]);
-            cycleSuspectedTurn();
+
+            if (controller.advancePos(c, diceResults[0] + diceResults[1])) {
+                int visTurn = controller.getTurn() + 1;
+                infoText.setText("Player " + visTurn + " won!");
+                rollDice.setEnabled(false);
+            } else {
+                int visTurn = controller.getTurn() + 1;
+                infoText.setText("It's player " + visTurn + "' turn");
+                cycleSuspectedTurn();
+            }
+
         } else {
-            System.out.println("Click the player icon to progress on the ladder/snakes");
+            infoText.setText("Click your player icon!");
         }
     }
 
-    private void configGUIButtons(JFrame frame) {
+    private void configGUIButtons(Container c) {
         rollDice = new JButton("Roll the dice!");
         diceResult1 = new JTextField("0");
         diceResult2 = new JTextField("0");
-        rollDice.setBounds(733, 225, 120, 25);
-        diceResult1.setBounds(733, 270, 20, 20);
-        diceResult2.setBounds(833, 270, 20, 20);
+        infoText = new JLabel("It's player 1' turn");
+
+        Font diceFont = new Font(infoText.getFont().getName(), Font.PLAIN, 22);
+
+        rollDice.setBounds(683, 225, 120, 25);
         rollDice.addActionListener(this);
 
-        frame.add(rollDice);
-        frame.add(diceResult1);
-        frame.add(diceResult2);
-    }
+        diceResult1.setBounds(683, 270, 25, 25);
+        diceResult1.setFont(diceFont);
+        diceResult2.setBounds(783, 270, 25, 25);
+        diceResult2.setFont(diceFont);
+
+        infoText.setBounds(653, 150, 300, 50);
+        infoText.setFont(new Font(infoText.getFont().getName(), Font.PLAIN, 30));
+
+        c.add(rollDice);
+        c.add(diceResult1);
+        c.add(diceResult2);
+        c.add(infoText);
+    };
 
     /**
      * This function populates the play field with a set of hardcoded 36 buttons, to

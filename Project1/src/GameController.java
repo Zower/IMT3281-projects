@@ -2,14 +2,14 @@ package Project1.src;
 
 import java.util.HashMap;
 
-import javax.swing.JFrame;
+import java.awt.Container;
 import javax.swing.AbstractButton;
 
 import java.awt.event.*;
 
 public class GameController implements ActionListener {
     private int turn;
-    final private int TILENO = 36;
+    final private int LASTTILE = 36;
     private Player[] players = new Player[2];
     private BoardPiece[] board = new BoardPiece[36];
     private HashMap<Integer, Integer> obstacles = new HashMap<Integer, Integer>();
@@ -35,21 +35,26 @@ public class GameController implements ActionListener {
      * 
      * @param advanceNo The amount of tiles to move.
      */
-    public void advancePos(int advanceNo) {
+    public boolean advancePos(Container c, int advanceNo) {
         int tempTile = players[turn].getTile() + advanceNo;
-        int obstTile = checkObstacles(tempTile);
-        int[] tilePos = getTilePos(tempTile - 1);
 
-        players[turn].advance(tilePos, tempTile);
+        if (tempTile == LASTTILE) {
+            players[turn].advance(board, LASTTILE);
+            return true;
+        } else if (tempTile > LASTTILE) {
+            cycleTurn();
+            return false;
+        }
+        int obstTile = checkObstacles(tempTile);
+
+        players[turn].advance(board, tempTile);
         if (obstTile == 0) {
             cycleTurn();
         } else {
             players[turn].setNextTile(obstTile);
             board[tempTile - 1].addActionListener(this);
         }
-        // if (tempTile == TILENO) {
-        // // won = true;
-        // }
+        return false;
 
     }
 
@@ -63,8 +68,7 @@ public class GameController implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         int nextTile = players[turn].getNextTile();
-        int[] tilePos = getTilePos(nextTile - 1);
-        players[turn].advance(tilePos, nextTile);
+        players[turn].advance(board, nextTile);
         cycleTurn();
         ((AbstractButton) e.getSource()).removeActionListener(this);
     }
@@ -78,9 +82,9 @@ public class GameController implements ActionListener {
         players[1] = player2;
     }
 
-    public void configPlayers(JFrame frame) {
-        players[0].config(frame);
-        players[1].config(frame);
+    public void configPlayers(Container c) {
+        players[0].config(c);
+        players[1].config(c);
     }
 
     public void cycleTurn() {
@@ -89,11 +93,6 @@ public class GameController implements ActionListener {
         } else {
             turn = 0;
         }
-    }
-
-    public int[] getTilePos(int tile) {
-        int[] coords = { board[tile].getX() + 22, board[tile].getY() + 20 };
-        return coords;
     }
 
     /**

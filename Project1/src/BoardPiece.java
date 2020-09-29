@@ -1,8 +1,8 @@
 package Project1.src;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import java.awt.event.*;
+import java.awt.Container;
 
 /**
  * Class representing a piece on the board, with its clickable button, tile
@@ -10,6 +10,12 @@ import java.awt.event.*;
  */
 public class BoardPiece extends GUIElement {
     private JButton button;
+
+    public BoardPiece() {
+        super();
+        this.button = new JButton();
+        setInvisible();
+    }
 
     public BoardPiece(int tileNo, int x, int y) {
         super(tileNo, x, y);
@@ -34,11 +40,15 @@ public class BoardPiece extends GUIElement {
         button.removeActionListener(l);
     }
 
+    public JButton getButton() {
+        return button;
+    }
+
     /**
      * Configures the button
      */
-    public void config(JFrame frame) {
+    public void config(Container c) {
         button.setBounds(getX(), getY(), 102, 102);
-        frame.add(button);
+        c.add(button);
     }
 }

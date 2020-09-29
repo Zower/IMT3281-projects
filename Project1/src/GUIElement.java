@@ -5,6 +5,10 @@ public class GUIElement {
     private int y;
     private int tileNo;
 
+    public GUIElement() {
+
+    }
+
     public GUIElement(int tileNo, int x, int y) {
         this.tileNo = tileNo;
         this.x = x;
@@ -25,6 +29,14 @@ public class GUIElement {
 
     public int getY() {
         return y;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 
     public void print() {
