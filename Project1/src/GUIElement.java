@@ -45,4 +45,10 @@ public class GUIElement {
         System.out.println("Y: " + Integer.toString(y));
     }
 
+    public void resetSuper(int x, int y) {
+        this.x = x;
+        this.y = y;
+        this.tileNo = 1;
+    }
+
 }

@@ -10,49 +10,64 @@ import java.awt.event.*;
 public class GameController implements ActionListener {
     private int turn;
     final private int LASTTILE = 36;
+    private boolean toBeCycled;
+    private boolean doubleRoll;
     private Player[] players = new Player[2];
     private BoardPiece[] board = new BoardPiece[36];
     private HashMap<Integer, Integer> obstacles = new HashMap<Integer, Integer>();
-    {
-
-    };
 
     GameController() {
         this.turn = 0;
+        this.toBeCycled = true;
+        this.doubleRoll = false;
         this.obstacles = populateObstacles();
     }
 
     GameController(int turn, Player player1, Player player2, BoardPiece[] board) {
         this.turn = turn;
+        this.toBeCycled = true;
+        this.doubleRoll = false;
         this.players[0] = player1;
         this.players[1] = player2;
         this.board = board;
     }
 
     /**
-     * Advances (graphically and otherwise) the current players position. TODO:
-     * handle winning, handle going beyond the board.
+     * Advances (graphically and otherwise) the current players position.
      * 
      * @param advanceNo The amount of tiles to move.
+     * @param doubleR   whether the player rolled two equal die
+     * @return boolean representing whether the game was won or not
      */
-    public boolean advancePos(Container c, int advanceNo) {
+    public boolean advancePos(int advanceNo, boolean doubleR) {
+        doubleRoll = doubleR;
         int tempTile = players[turn].getTile() + advanceNo;
 
         if (tempTile == LASTTILE) {
             players[turn].advance(board, LASTTILE);
             return true;
         } else if (tempTile > LASTTILE) {
-            cycleTurn();
+            if (!doubleRoll) {
+                cycleTurn();
+            }
             return false;
         }
         int obstTile = checkObstacles(tempTile);
 
         players[turn].advance(board, tempTile);
         if (obstTile == 0) {
-            cycleTurn();
+            if (!doubleRoll) {
+                cycleTurn();
+            }
+
         } else {
+            toBeCycled = false;
             players[turn].setNextTile(obstTile);
             board[tempTile - 1].addActionListener(this);
+            if (doubleR) {
+                doubleRoll = doubleR;
+            }
+
         }
         return false;
 
@@ -68,8 +83,18 @@ public class GameController implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         int nextTile = players[turn].getNextTile();
-        players[turn].advance(board, nextTile);
-        cycleTurn();
+        toBeCycled = true;
+        try {
+            players[turn].advance(board, nextTile);
+        } catch (Exception ex) { // Reset button has been clicked while a player was on a snake/ladder
+            ((AbstractButton) e.getSource()).removeActionListener(this);
+            return;
+        }
+
+        if (!doubleRoll) {
+            cycleTurn();
+        }
+
         ((AbstractButton) e.getSource()).removeActionListener(this);
     }
 
@@ -111,6 +136,10 @@ public class GameController implements ActionListener {
         return turn;
     }
 
+    public boolean getToBeCycled() {
+        return toBeCycled;
+    }
+
     public void setTurn(int turn) {
         this.turn = turn;
     }
@@ -130,6 +159,14 @@ public class GameController implements ActionListener {
      */
     public Player getPlayer(int player) {
         return players[player];
+    }
+
+    public void reset() {
+        turn = 0;
+        toBeCycled = true;
+        doubleRoll = false;
+        players[0].reset(10, 525);
+        players[1].reset(30, 525);
     }
 
     private HashMap<Integer, Integer> populateObstacles() {

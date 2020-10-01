@@ -28,11 +28,6 @@ public class MainGUI extends JPanel {
                 setMaximumSize(getSize());
             }
         };
-        // RollDiceGUI rDGUI = new RollDiceGUI();
-        // rollDice.addActionListener(roll -> {
-        // rDGUI.rollDice();
-        // });
-        // Used this way so that both buttons could have the same size
 
         this.maxClicks = new JButton("Maximum Clicks") {
             {
@@ -63,7 +58,6 @@ public class MainGUI extends JPanel {
         jFrame.pack();
 
         createButtonSpace(40, 0);
-
         jFrame.setSize(400, 400);
         jFrame.setVisible(true);
         jFrame.getContentPane().setLayout(new BoxLayout(jFrame.getContentPane(), BoxLayout.Y_AXIS));

@@ -20,8 +20,9 @@ public class Player extends GUIElement {
     }
 
     public void setLocation(int x, int y) {
+        setX(x);
+        setY(y);
         playerImage.setLocation(x, y);
-        playerImage.revalidate();
     }
 
     public void setNextTile(int nextTile) {
@@ -47,6 +48,12 @@ public class Player extends GUIElement {
     public int[] getTilePos(BoardPiece[] board, int tile) {
         int[] coords = { board[tile].getX() + 22, board[tile].getY() + 20 };
         return coords;
+    }
+
+    public void reset(int x, int y) {
+        resetSuper(x, y);
+        setLocation(x, y);
+        this.nextTile = 0;
     }
 
 }

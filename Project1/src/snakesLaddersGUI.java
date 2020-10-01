@@ -5,6 +5,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
+import javax.swing.JTextArea;
 
 import java.awt.image.BufferedImage;
 import java.awt.Font;
@@ -20,15 +21,15 @@ public class snakesLaddersGUI extends JFrame implements ActionListener {
 
     private Container c;
     private JButton rollDice;
-    private JTextField diceResult1;
-    private JTextField diceResult2;
-    private JLabel infoText;
+    private JButton exitButton;
+    private JButton reset;
+    private JTextField diceResult1, diceResult2;
+    private JTextArea infoText;
+    private JTextArea introText;
     private GameController controller;
-    private int suspectedTurn;
 
     public snakesLaddersGUI() {
         super("Snakes and Ladders");
-        this.suspectedTurn = 0;
     }
 
     /**
@@ -38,7 +39,8 @@ public class snakesLaddersGUI extends JFrame implements ActionListener {
 
     public void initGUI() {
         setLayout(null);
-        setSize(1000, 650);
+        setSize(940, 650);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         c = getContentPane();
@@ -94,25 +96,30 @@ public class snakesLaddersGUI extends JFrame implements ActionListener {
      * 
      */
     public void actionPerformed(ActionEvent e) {
-        if (suspectedTurn == controller.getTurn()) {
+        if (controller.getToBeCycled()) {
 
             int[] diceResults = rollDie();
 
             diceResult1.setText(Integer.toString(diceResults[0]));
             diceResult2.setText(Integer.toString(diceResults[1]));
 
-            if (controller.advancePos(c, diceResults[0] + diceResults[1])) {
+            boolean doubleRoll = (diceResults[0] == diceResults[1]);
+
+            if (controller.advancePos(diceResults[0] + diceResults[1], doubleRoll)) { // Game won
                 int visTurn = controller.getTurn() + 1;
                 infoText.setText("Player " + visTurn + " won!");
                 rollDice.setEnabled(false);
-            } else {
+            } else { // Regular turn
                 int visTurn = controller.getTurn() + 1;
-                infoText.setText("It's player " + visTurn + "' turn");
-                cycleSuspectedTurn();
+                if (doubleRoll) {
+                    infoText.setText(" Double dice! \n Roll again.");
+                } else {
+                    infoText.setText(" It's player " + visTurn + "' turn");
+                }
             }
 
         } else {
-            infoText.setText("Click your player icon!");
+            infoText.setText("Click your icon!");
         }
     }
 
@@ -120,25 +127,38 @@ public class snakesLaddersGUI extends JFrame implements ActionListener {
         rollDice = new JButton("Roll the dice!");
         diceResult1 = new JTextField("0");
         diceResult2 = new JTextField("0");
-        infoText = new JLabel("It's player 1' turn");
+        infoText = new JTextArea(" It's player 1' turn");
+        introText = new JTextArea(
+                "The players take turns rolling the dice. The \n corresponding player piece will move however much \n you roll. If you roll two equal die, you get another turn. \n If you land on a snake or ladder, you will need to click \n your icon to progress before the turn is handed  over. \n If you roll beyond the winning tile, you will remain \n where you were. You have to roll perfect to land on the \n winning tile.");
+
+        exitButton = new JButton("Exit");
+        reset = new JButton("New Game/Reset");
 
         Font diceFont = new Font(infoText.getFont().getName(), Font.PLAIN, 22);
 
-        rollDice.setBounds(683, 225, 120, 25);
+        rollDice.setBounds(693, 270, 120, 25);
         rollDice.addActionListener(this);
+        exitButton.setBounds(693, 575, 120, 25);
+        exitButton.addActionListener(exiting -> dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
+        reset.setBounds(678, 375, 150, 25);
+        reset.addActionListener(reset -> reset());
 
-        diceResult1.setBounds(683, 270, 25, 25);
+        diceResult1.setBounds(693, 315, 25, 25);
         diceResult1.setFont(diceFont);
-        diceResult2.setBounds(783, 270, 25, 25);
+        diceResult2.setBounds(793, 315, 25, 25);
         diceResult2.setFont(diceFont);
 
-        infoText.setBounds(653, 150, 300, 50);
+        infoText.setBounds(640, 165, 237, 90);
         infoText.setFont(new Font(infoText.getFont().getName(), Font.PLAIN, 30));
+        introText.setBounds(620, 15, 300, 130);
 
         c.add(rollDice);
         c.add(diceResult1);
         c.add(diceResult2);
         c.add(infoText);
+        c.add(introText);
+        c.add(exitButton);
+        c.add(reset);
     };
 
     /**
@@ -198,15 +218,13 @@ public class snakesLaddersGUI extends JFrame implements ActionListener {
      */
     public int[] rollDie() {
         int[] die = { (int) (Math.random() * 6 + 1), (int) (Math.random() * 6 + 1) };
-        System.out.println("Die 1: " + Integer.toString(die[0]) + "\nDie 2: " + Integer.toString(die[1]));
         return die;
     }
 
-    public void cycleSuspectedTurn() {
-        if (suspectedTurn == 0) {
-            suspectedTurn = 1;
-        } else {
-            suspectedTurn = 0;
-        }
+    public void reset() {
+        rollDice.setEnabled(true);
+        infoText.setText(" It's player 1' turn");
+        controller.reset();
     }
+
 }
