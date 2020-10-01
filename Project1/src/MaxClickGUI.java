@@ -1,5 +1,6 @@
 /**
  * This code is part of a previous assignment, and is only here due to the requirement for the Snakes and Ladders application to be launched from the Game Center.
+ * As such I don't consider it part of "Project 1", nor do I hold it to the same standards as the files related to snakesAndLadders.
  */
 
 package Project1.src;

@@ -1,11 +1,21 @@
 package Project1.src;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.WindowEvent;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.Box;
+import javax.swing.JFrame;
+import javax.swing.BoxLayout;
+import javax.swing.BorderFactory;
 
+import java.awt.event.WindowEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+/**
+ * Class representing the main game center where one can start all the games.
+ */
 @SuppressWarnings("serial")
-public class MainGUI extends JPanel {
+public class MainGUI extends JPanel implements ActionListener {
 
     private final JFrame jFrame;
     private JButton rollDice;
@@ -19,7 +29,7 @@ public class MainGUI extends JPanel {
         this.mainBox = Box.createVerticalBox();
         this.jFrame = new JFrame("Game center");
 
-        // Used this way so that both buttons i,e 'Roll a Dice' and 'Maximum clicks'
+        // Used this way so that all buttons e.g. 'Roll a Dice' and 'Maximum clicks'
         // could have the same size
 
         this.rollDice = new JButton("Roll a Dice") {
@@ -44,63 +54,79 @@ public class MainGUI extends JPanel {
             }
         };
 
-        this.exit = new JButton("Exit");
+        this.exit = new JButton("Exit") {
+            {
+                setSize(150, 75);
+                setMaximumSize(getSize());
+            }
+
+        };
+
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setResizable(false);
 
     }
 
     /**
-     * initiates the gui
+     * Initiates the main page.
      **/
     public void MainPage() {
 
         jFrame.pack();
-
-        createButtonSpace(40, 0);
         jFrame.setSize(400, 400);
-        jFrame.setVisible(true);
         jFrame.getContentPane().setLayout(new BoxLayout(jFrame.getContentPane(), BoxLayout.Y_AXIS));
 
-        mainBox.add(rollDice);
-        Game.RollDiceGUI rollGUI = new Game.RollDiceGUI();
-        rollDice.addActionListener(dice -> rollGUI.RollDiceInitGUI());
-
-        createButtonSpace(20, 100);
-
-        mainBox.add(maxClicks);
-        MaxClickGUI maxGUI = new MaxClickGUI();
-        maxClicks.addActionListener(max -> {
-            maxGUI.maxClickGui();
-
-        });
-
-        createButtonSpace(20, 100);
-
-        mainBox.add(snakesLaddersButton);
-        snakesLaddersGUI snakesLadders = new snakesLaddersGUI();
-        snakesLaddersButton.addActionListener(SL -> {
-            snakesLadders.initGUI();
-        });
-
-        createButtonSpace(50, 20);
-
-        jFrame.getContentPane().add(mainBox);
-        mainBox.setAlignmentX(CENTER_ALIGNMENT);
+        configButtons();
 
         mainBox.setBorder(BorderFactory.createTitledBorder(" Games"));
+        mainBox.setAlignmentX(CENTER_ALIGNMENT);
 
-        // closes the jFrame when ever the the exit button clickMe
-        exit.addActionListener(exiting -> jFrame.dispatchEvent(new WindowEvent(jFrame, WindowEvent.WINDOW_CLOSING)));
-        JPanel extPanel = new JPanel();
-        extPanel.add(exit, BorderLayout.PAGE_START);
-        jFrame.add(extPanel);
-
+        jFrame.add(mainBox);
+        jFrame.setVisible(true);
     }
 
-    public void createButtonSpace(int vertical, int horizontal) {
+    /**
+     * Configures the buttons correctly.
+     */
+    private void configButtons() {
+        Game.RollDiceGUI rollGUI = new Game.RollDiceGUI();
+        rollDice.addActionListener(dice -> rollGUI.RollDiceInitGUI());
+        mainBox.add(rollDice);
+
+        createButtonSpace(20, 100);
+
+        MaxClickGUI maxGUI = new MaxClickGUI();
+        maxClicks.addActionListener(max -> maxGUI.maxClickGui());
+        mainBox.add(maxClicks);
+
+        createButtonSpace(20, 100);
+
+        snakesLaddersGUI snakesLadders = new snakesLaddersGUI();
+        snakesLaddersButton.addActionListener(SL -> snakesLadders.initGUI());
+        mainBox.add(snakesLaddersButton);
+
+        createButtonSpace(20, 100);
+
+        exit.addActionListener(this);
+        mainBox.add(exit);
+    }
+
+    /**
+     * Creates some visual space.
+     * 
+     * @param vertical   The vertical space to create.
+     * @param horizontal The horizontal space to create.
+     */
+    private void createButtonSpace(int vertical, int horizontal) {
         mainBox.add(Box.createVerticalStrut(vertical));
         mainBox.add(Box.createHorizontalStrut(horizontal));
+    }
+
+    /**
+     * Exit button has been clicked, close the program.
+     */
+    public void actionPerformed(ActionEvent e) {
+        jFrame.dispatchEvent(new WindowEvent(jFrame, WindowEvent.WINDOW_CLOSING));
     }
 
 }

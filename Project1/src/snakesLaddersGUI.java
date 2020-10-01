@@ -16,6 +16,9 @@ import javax.imageio.ImageIO;
 
 import java.io.File;
 
+/**
+ * Class representing the entire SnakesLadders game.
+ */
 @SuppressWarnings("serial")
 public class snakesLaddersGUI extends JFrame implements ActionListener {
 
@@ -38,90 +41,47 @@ public class snakesLaddersGUI extends JFrame implements ActionListener {
      */
 
     public void initGUI() {
+        // Initial setup of the frame
         setLayout(null);
         setSize(940, 650);
         setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         c = getContentPane();
 
         // Create all the buttons
         BoardPiece[] board = populateBoard();
 
-        gameLogic(board, c);
+        // The order of these is important, as it determines what gets drawn on top of
+        // eachother.
         configGUIButtons(c);
+        gameLogic(board, c);
+        drawPlayingBoard(c);
 
-        /**
-         * Draws the playing board based on the image 'board.png'
-         */
+        setVisible(true);
+    }
+
+    /**
+     * Draws the playing board based on the image 'board.png'
+     */
+    private void drawPlayingBoard(Container c) {
         try {
             BufferedImage myPicture = ImageIO.read(new File("Project1\\assets\\board.png"));
             JLabel picLabel = new JLabel(new ImageIcon(myPicture));
             picLabel.setBounds(0, 0, 600, 600);
-            add(picLabel);
+            c.add(picLabel);
         } catch (Exception e) {
             System.out.println(e);
+            System.out.println("\nMost likely you are missing the playerboard file board.png");
         }
-
-        setVisible(true);
-
-    }
-
-    private void gameLogic(BoardPiece[] board, Container c) {
-
-        // Configure the buttons
-        for (int i = 0; i < board.length; i++) {
-            BoardPiece currTile = board[i];
-            currTile.config(c);
-        }
-
-        // Create the players
-        controller = new GameController();
-        controller.insertBoard(board);
-        try {
-            controller.insertPlayers(new Player(1, 10, 525, ImageIO.read(new File("Project1\\assets\\player1.png"))),
-                    new Player(1, 30, 525, ImageIO.read(new File("Project1\\assets\\player2.png"))));
-
-        } catch (Exception e) {
-            System.out.println(e);
-            System.exit(-1);
-        }
-
-        controller.configPlayers(c);
-
     }
 
     /**
-     * Progression of the game, happens on rollDice mouseDown.
+     * A function that handles all the ugly configuration of the buttons. Every
+     * button is declared under the snakesLaddersGUI class, and initialized here.
      * 
+     * @param c The container to add everything to.
      */
-    public void actionPerformed(ActionEvent e) {
-        if (controller.getToBeCycled()) {
-
-            int[] diceResults = rollDie();
-
-            diceResult1.setText(Integer.toString(diceResults[0]));
-            diceResult2.setText(Integer.toString(diceResults[1]));
-
-            boolean doubleRoll = (diceResults[0] == diceResults[1]);
-
-            if (controller.advancePos(diceResults[0] + diceResults[1], doubleRoll)) { // Game won
-                int visTurn = controller.getTurn() + 1;
-                infoText.setText("Player " + visTurn + " won!");
-                rollDice.setEnabled(false);
-            } else { // Regular turn
-                int visTurn = controller.getTurn() + 1;
-                if (doubleRoll) {
-                    infoText.setText(" Double dice! \n Roll again.");
-                } else {
-                    infoText.setText(" It's player " + visTurn + "' turn");
-                }
-            }
-
-        } else {
-            infoText.setText("Click your icon!");
-        }
-    }
 
     private void configGUIButtons(Container c) {
         rollDice = new JButton("Roll the dice!");
@@ -162,13 +122,82 @@ public class snakesLaddersGUI extends JFrame implements ActionListener {
     };
 
     /**
-     * This function populates the play field with a set of hardcoded 36 buttons, to
-     * be used by the players to click on.
+     * This function signifies a progression away from drawing buttons and the
+     * field, and into gameplay. There are still things being created in this
+     * function that are strictly graphical, however.
      * 
-     * @return An array of BoardPieces, where each boardPiece' tileNo is
-     *         representative of the in-game tile number, which "snakes" back and
-     *         forth. This gives the function it's need for the weird populate
-     *         logic.
+     * @param board The hidden buttons that make up the clickable field.
+     * @param c     The container to add items to.
+     */
+    private void gameLogic(BoardPiece[] board, Container c) {
+
+        // Configure the buttons
+        for (int i = 0; i < board.length; i++) {
+            BoardPiece currTile = board[i];
+            currTile.config(c);
+        }
+
+        // Create the controller, insert the Board and Players.
+        controller = new GameController();
+        controller.insertBoard(board);
+        try {
+            controller.insertPlayers(new Player(1, 10, 525, ImageIO.read(new File("Project1\\assets\\player1.png"))),
+                    new Player(1, 30, 525, ImageIO.read(new File("Project1\\assets\\player2.png"))));
+
+        } catch (Exception e) { // Unable to read image, most likely
+            System.out.println(e);
+            System.out.println("\nMost likely you are missing the player images.");
+            System.exit(-1);
+        }
+
+        controller.configPlayers(c);
+
+    }
+
+    /**
+     * Progression of the game, happens on rollDice mouseDown.
+     * 
+     */
+    public void actionPerformed(ActionEvent e) {
+        if (controller.getToBeCycled()) { // If the game is to progress
+
+            int[] diceResults = rollDie();
+
+            diceResult1.setText(Integer.toString(diceResults[0]));
+            diceResult2.setText(Integer.toString(diceResults[1]));
+
+            boolean doubleRoll = (diceResults[0] == diceResults[1]);
+
+            if (!controller.advancePos(diceResults[0] + diceResults[1], doubleRoll)) { // If advancePos returns false,
+                                                                                       // the game is
+                                                                                       // still to progress
+                int visTurn = controller.getTurn() + 1;
+                if (doubleRoll) {
+                    infoText.setText(" Double dice! \n Roll again.");
+                } else {
+                    infoText.setText(" It's player " + visTurn + "' turn");
+                }
+            } else { // The game is won by one player
+                int visTurn = controller.getTurn() + 1;
+                infoText.setText("Player " + visTurn + " won!");
+                rollDice.setEnabled(false);
+            }
+
+        } else { // If the getToBeCycled function returned false, it means the player has yet to
+                 // climb/descend a ladder/snake
+            infoText.setText("Click your icon!");
+        }
+    }
+
+    /**
+     * This function populates the play field with a set of hardcoded 36 buttons, to
+     * be used by the players to click on. Each boardPiece' tileNo is representative
+     * of the in-game tile number, which "snakes" back and forth. This gives the
+     * function it's need for the weird populate logic. Each BoardPiece index starts
+     * at 0, while the play field starts at 1, therefore each tiles index is it's
+     * tile number - 1.
+     * 
+     * @return An array of BoardPieces.
      */
 
     private BoardPiece[] populateBoard() {
@@ -196,19 +225,18 @@ public class snakesLaddersGUI extends JFrame implements ActionListener {
     }
 
     /**
-     * Function that allows the program to reduce or increase by tile size based on
-     * a boolean.
+     * Function that returns a program-given integer either in it's positive or
+     * negative form.
      * 
-     * @param reverse  The deciding factor for whether to reduce or increase by tile
-     *                 size.
      * @param tileSize The size to increase or decrease by.
+     * @param reverse  The deciding factor for whether return positive or negative
      * @return the given tileSize, either negative or positive based on @reverse
      */
-    private int operate(int tileSize, boolean reverse) {
+    private int operate(int number, boolean reverse) {
         if (reverse) {
-            return -tileSize;
+            return -number;
         }
-        return tileSize;
+        return number;
     }
 
     /**
@@ -221,6 +249,9 @@ public class snakesLaddersGUI extends JFrame implements ActionListener {
         return die;
     }
 
+    /**
+     * Resets the playing field and all variables.
+     */
     public void reset() {
         rollDice.setEnabled(true);
         infoText.setText(" It's player 1' turn");

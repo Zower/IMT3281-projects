@@ -1,6 +1,9 @@
 package Project1.src;
 
-public class GUIElement {
+/**
+ * Parent-class for some GUI elements.
+ */
+public abstract class GUIElement {
     private int x;
     private int y;
     private int tileNo;
@@ -15,7 +18,7 @@ public class GUIElement {
         this.y = y;
     }
 
-    public void setTile(int tileNo) {
+    protected void setTile(int tileNo) {
         this.tileNo = tileNo;
     }
 
@@ -31,21 +34,21 @@ public class GUIElement {
         return y;
     }
 
-    public void setX(int x) {
+    protected void setX(int x) {
         this.x = x;
     }
 
-    public void setY(int y) {
+    protected void setY(int y) {
         this.y = y;
     }
 
-    public void print() {
-        System.out.println("Tile no: " + Integer.toString(tileNo));
-        System.out.println("X: " + Integer.toString(x));
-        System.out.println("Y: " + Integer.toString(y));
-    }
-
-    public void resetSuper(int x, int y) {
+    /**
+     * Reset local variables and set x and y.
+     * 
+     * @param x The x coordinate to set.
+     * @param y The y coordinate to set.
+     */
+    protected void resetSuper(int x, int y) {
         this.x = x;
         this.y = y;
         this.tileNo = 1;

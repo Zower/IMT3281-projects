@@ -6,7 +6,7 @@ import java.awt.Container;
 
 /**
  * Class representing a piece on the board, with its clickable button, tile
- * number and coordinates. get() functions are self-explantory.
+ * number and coordinates.
  */
 public class BoardPiece extends GUIElement {
     private JButton button;
@@ -46,6 +46,8 @@ public class BoardPiece extends GUIElement {
 
     /**
      * Configures the button
+     * 
+     * @param c The container to add the button to.
      */
     public void config(Container c) {
         button.setBounds(getX(), getY(), 102, 102);
