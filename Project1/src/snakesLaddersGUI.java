@@ -14,8 +14,6 @@ import java.awt.Container;
 
 import javax.imageio.ImageIO;
 
-import java.io.File;
-
 /**
  * Class representing the entire SnakesLadders game.
  */
@@ -66,12 +64,13 @@ public class snakesLaddersGUI extends JFrame implements ActionListener {
      */
     private void drawPlayingBoard(Container c) {
         try {
-            BufferedImage myPicture = ImageIO.read(new File("Project1\\assets\\board.png"));
+            BufferedImage myPicture = ImageIO.read(this.getClass().getResourceAsStream("/Project1/assets/board.png"));
             JLabel picLabel = new JLabel(new ImageIcon(myPicture));
             picLabel.setBounds(0, 0, 600, 600);
             c.add(picLabel);
         } catch (Exception e) {
             System.out.println(e);
+            e.printStackTrace();
             System.out.println("\nMost likely you are missing the playerboard file board.png");
         }
     }
@@ -105,12 +104,16 @@ public class snakesLaddersGUI extends JFrame implements ActionListener {
 
         diceResult1.setBounds(693, 315, 25, 25);
         diceResult1.setFont(diceFont);
+        diceResult1.setEditable(false);
         diceResult2.setBounds(793, 315, 25, 25);
         diceResult2.setFont(diceFont);
+        diceResult2.setEditable(false);
 
         infoText.setBounds(640, 165, 237, 90);
         infoText.setFont(new Font(infoText.getFont().getName(), Font.PLAIN, 30));
+        infoText.setEditable(false);
         introText.setBounds(620, 15, 300, 130);
+        introText.setEditable(false);
 
         c.add(rollDice);
         c.add(diceResult1);
@@ -141,11 +144,15 @@ public class snakesLaddersGUI extends JFrame implements ActionListener {
         controller = new GameController();
         controller.insertBoard(board);
         try {
-            controller.insertPlayers(new Player(1, 10, 525, ImageIO.read(new File("Project1\\assets\\player1.png"))),
-                    new Player(1, 30, 525, ImageIO.read(new File("Project1\\assets\\player2.png"))));
+            controller.insertPlayers(
+                    new Player(1, 10, 525,
+                            ImageIO.read(this.getClass().getResourceAsStream("/Project1/assets/player1.png"))),
+                    new Player(1, 30, 525,
+                            ImageIO.read(this.getClass().getResourceAsStream("/Project1/assets/player2.png"))));
 
         } catch (Exception e) { // Unable to read image, most likely
-            System.out.println(e);
+            // System.out.println(e);
+            e.printStackTrace();
             System.out.println("\nMost likely you are missing the player images.");
             System.exit(-1);
         }
